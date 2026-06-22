@@ -1,0 +1,76 @@
+{
+  "generated_this_run": 10,
+  "provider": "gpt-image-2 (OpenAI / ChatGPT Image API), quality=medium",
+  "assets": [
+    {
+      "category": "background",
+      "path": "public/images/ui/scope-bg.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "プレイ/各画面のソナースコープ背景（ScreenShell）"
+    },
+    {
+      "category": "control-skin",
+      "path": "public/images/ui/primary-control.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "主操作ボタン(ActionButton primary)の文字なし金属外装。labelはHTML側"
+    },
+    {
+      "category": "motif",
+      "path": "public/images/ui/emblem.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "夜間遺失物回収局エンブレム（タイトル/ローディング/装飾）"
+    },
+    {
+      "category": "background",
+      "path": "public/images/ui/title-bg.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "タイトル画面の暗い売り場+音波背景"
+    },
+    {
+      "category": "background",
+      "path": "public/images/ui/result-bg.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "結果画面の全面走査背景"
+    },
+    {
+      "category": "background",
+      "path": "public/images/ui/mission-panel.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "依頼画面の指示書パネル質感(Panel bg)"
+    },
+    {
+      "category": "control-skin",
+      "path": "public/images/ui/secondary-control.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "副操作ボタン(ActionButton secondary)の沈み込み金属外装"
+    },
+    {
+      "category": "motif",
+      "path": "public/images/ui/item-toolbox.png",
+      "generated": true,
+      "integrated": true,
+      "usage": "依頼画面の回収対象エコー（琥珀の二重反響）"
+    },
+    {
+      "category": "motif",
+      "path": "public/images/ui/ghost.png",
+      "generated": true,
+      "integrated": false,
+      "usage": "幽霊モチーフ（予備アート。本編はCanvas手続き描画）"
+    },
+    {
+      "category": "motif",
+      "path": "public/images/ui/robot.png",
+      "generated": true,
+      "integrated": false,
+      "usage": "ロボットユニット肖像（予備アート。本編はCanvasマーカー）"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm install 2>&1)",
+      "PowerShell($root = \"C:\\\\Users\\\\micke\\\\OneDrive\\\\Desktop\\\\claude専用ファイル\\\\sound escape\"; foreach \\($d in @\\(\"public\\\\images\\\\ui\",\"public\\\\audio\",\"public\\\\video\",\"lib\",\"components\",\"docs\"\\)\\) { New-Item -ItemType Directory -Force -Path \\(Join-Path $root $d\\) | Out-Null }; Copy-Item \"C:\\\\Users\\\\micke\\\\.claude-oss\\\\skills\\\\hackathon-build\\\\assets\\\\gen-image.mjs\" \\(Join-Path $root \"gen-image.mjs\"\\) -Force; Move-Item \\(Join-Path $root \"The_Final_Sweep.mp3\"\\) \\(Join-Path $root \"public\\\\audio\\\\bgm.mp3\"\\) -Force; Write-Output \"ok\"; Get-ChildItem \\(Join-Path $root \"public\\\\audio\"\\))",
+      "PowerShell(Get-ChildItem \"C:\\\\Users\\\\micke\\\\OneDrive\\\\Desktop\\\\claude専用ファイル\\\\sound escape\\\\public\\\\images\\\\ui\" | Select-Object Name, @{n='KB';e={[math]::Round\\($_.Length/1KB\\)}})",
+      "PowerShell(npm run dev 2>&1 | Tee-Object -FilePath \"$env:TEMP\\\\se-dev.log\")",
+      "mcp__Claude_Preview__preview_start"
+    ]
+  }
+}
