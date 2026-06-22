@@ -9,6 +9,7 @@ import { makeSeedString } from "@/lib/rng";
 import { saveResult } from "@/lib/store";
 import { diffConfig } from "@/lib/difficulty";
 import type { Difficulty, GameMap, Mission, Mode, RunResult, Screen } from "@/lib/types";
+import { IntroScreen } from "./IntroScreen";
 import { TitleScreen } from "./TitleScreen";
 import { MissionScreen } from "./MissionScreen";
 import { MicCalibration } from "./MicCalibration";
@@ -20,7 +21,7 @@ export default function Game() {
   const audioRef = useRef<AudioEngine | null>(null);
   if (!audioRef.current && typeof window !== "undefined") audioRef.current = new AudioEngine();
 
-  const [screen, setScreen] = useState<Screen>("title");
+  const [screen, setScreen] = useState<Screen>("intro");
   const [mode, setMode] = useState<Mode>("voice");
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [demo, setDemo] = useState(false);
@@ -139,6 +140,8 @@ export default function Game() {
   const content = useMemo(() => {
     if (!audio) return null;
     switch (screen) {
+      case "intro":
+        return <IntroScreen onDone={() => setScreen("title")} />;
       case "title":
         return <TitleScreen onStart={startRun} onDemo={startDemo} />;
       case "mission":

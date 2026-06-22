@@ -1,5 +1,43 @@
 "use client";
-import { ButtonHTMLAttributes, ReactNode } from "react";
+import { ButtonHTMLAttributes, ReactNode, useEffect, useState } from "react";
+
+/** 文字送り演出。done を押すと（force=true）即全表示。 */
+export function Typewriter({
+  text,
+  speed = 34,
+  force = false,
+  onDone,
+}: {
+  text: string;
+  speed?: number;
+  force?: boolean;
+  onDone?: () => void;
+}) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    setN(0);
+  }, [text]);
+  useEffect(() => {
+    if (force) {
+      setN(text.length);
+      onDone?.();
+      return;
+    }
+    if (n >= text.length) {
+      onDone?.();
+      return;
+    }
+    const id = setTimeout(() => setN((v) => v + 1), speed);
+    return () => clearTimeout(id);
+  }, [n, text, speed, force, onDone]);
+  const done = n >= text.length;
+  return (
+    <span className="whitespace-pre-wrap">
+      {text.slice(0, n)}
+      {!done && <span className="animate-pulse text-accent">▌</span>}
+    </span>
+  );
+}
 
 export function ScreenShell({
   bg,

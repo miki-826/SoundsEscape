@@ -61,4 +61,10 @@ export interface RunResult {
   createdAt: number;
 }
 
-export type Screen = "title" | "mission" | "calibration" | "play" | "result";
+export type Screen =
+  | "intro"
+  | "title"
+  | "mission"
+  | "calibration"
+  | "play"
+  | "result";

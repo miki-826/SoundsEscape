@@ -68,6 +68,15 @@ export function buildMockMission(seed: string, difficulty?: number): Mission {
   };
 }
 
+/** AIキー無し/失敗時のオープニングプロローグ（固定） */
+export const MOCK_STORY = `——その夜から、街は静かに侵されはじめた。
+
+人の消えた深夜の施設には、置き去りにされた想いが幽霊となって彷徨う。あなたは「夜間遺失物回収局」のオペレーター。停電した現場へ回収ロボットを送り込み、依頼された忘れ物を取り戻す。
+
+光は使えない。点ければ、奴らに位置を知られる。頼れるのは、声が生む“音波”だけ。
+
+声を出さなければ、進めない。声を出すほど、何かが近づいてくる。`;
+
 /** AIキー無し時の結果コメント（テンプレート） */
 export function mockComment(success: boolean, rank: string): string {
   if (!success)
