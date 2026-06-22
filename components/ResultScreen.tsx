@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ScreenShell, ActionButton, Panel, Stat } from "./ui";
-import { topResults, StoredResult } from "@/lib/store";
+import { topResults, saveResult, StoredResult } from "@/lib/store";
+import { HAS_SUPABASE } from "@/lib/supabase";
 import type { RunResult } from "@/lib/types";
 
 const RANK_COLOR: Record<string, string> = {
@@ -11,6 +12,8 @@ const RANK_COLOR: Record<string, string> = {
   C: "text-muted",
   D: "text-danger text-glow-danger",
 };
+
+const NAME_KEY = "sound-escape:name";
 
 export function ResultScreen({
   result,
@@ -22,9 +25,24 @@ export function ResultScreen({
   onTitle: () => void;
 }) {
   const [board, setBoard] = useState<StoredResult[]>([]);
+  const [name, setName] = useState("");
+  const [registered, setRegistered] = useState(false);
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
-    topResults(5).then(setBoard);
+    setName(localStorage.getItem(NAME_KEY) || "");
+    topResults(8).then(setBoard);
   }, []);
+
+  const register = async () => {
+    const n = (name.trim() || "ANON").slice(0, 16);
+    setSaving(true);
+    localStorage.setItem(NAME_KEY, n);
+    await saveResult(result, n);
+    setRegistered(true);
+    setSaving(false);
+    setBoard(await topResults(8));
+  };
 
   const time = `${Math.floor(result.clearTimeSec / 60)}:${Math.floor(result.clearTimeSec % 60)
     .toString()
@@ -32,7 +50,7 @@ export function ResultScreen({
 
   return (
     <ScreenShell bg="/images/ui/result-bg.png" className="justify-center">
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-3xl py-4">
         <div className="mb-4 flex items-center justify-center gap-3">
           {result.demo && (
             <span className="rounded border border-danger/60 px-2 py-1 font-mono text-[10px] tracking-widest text-danger">
@@ -79,17 +97,50 @@ export function ResultScreen({
           </div>
         </Panel>
 
+        {/* ランキング登録 */}
+        <div className="mt-4">
+          <Panel title="ランキング登録 / REGISTER">
+            {registered ? (
+              <p className="text-sm text-accent text-glow">
+                登録しました。{HAS_SUPABASE ? "オンラインランキングに反映されます。" : "この端末のランキングに記録しました。"}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={16}
+                  placeholder="オペレーター名（16字まで）"
+                  className="flex-1 rounded border border-line bg-black/60 px-3 py-2 font-mono text-sm text-text outline-none placeholder:text-muted/60 focus:border-accent focus-visible:ring-1 focus-visible:ring-accent"
+                />
+                <ActionButton variant="primary" onClick={register} disabled={saving} className="min-w-40">
+                  {saving ? "登録中…" : "ランキングに登録"}
+                </ActionButton>
+              </div>
+            )}
+            <p className="mt-2 font-mono text-[10px] tracking-widest text-muted">
+              {HAS_SUPABASE
+                ? "保存先: オンライン (Supabase) ＋ この端末"
+                : "保存先: この端末 (LocalStorage)。オンライン共有にはSupabase設定が必要"}
+            </p>
+          </Panel>
+        </div>
+
         {board.length > 0 && (
           <div className="mt-4">
             <Panel title="回収記録 / TOP RECORDS">
               <ol className="space-y-1 font-mono text-xs">
                 {board.map((b, i) => (
                   <li key={i} className="flex items-center justify-between gap-2 text-text/85">
-                    <span className="text-muted">
-                      {String(i + 1).padStart(2, "0")} ・ {b.rank} ・ {b.item_name}
-                      {b.demo ? " (DEMO)" : ""}
+                    <span className="truncate">
+                      <span className="text-muted">{String(i + 1).padStart(2, "0")}.</span>{" "}
+                      <span className="text-text">{b.name}</span>{" "}
+                      <span className="text-muted">
+                        ・ {b.rank} ・ {b.item_name}
+                        {b.demo ? " (DEMO)" : ""}
+                      </span>
                     </span>
-                    <span className="text-accent">{b.score}</span>
+                    <span className="shrink-0 text-accent">{b.score}</span>
                   </li>
                 ))}
               </ol>

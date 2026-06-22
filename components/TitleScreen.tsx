@@ -9,9 +9,11 @@ const DIFF_ORDER: Difficulty[] = ["easy", "normal", "hard"];
 export function TitleScreen({
   onStart,
   onDemo,
+  onRanking,
 }: {
   onStart: (mode: Mode, difficulty: Difficulty) => void;
   onDemo: (difficulty: Difficulty) => void;
+  onRanking: () => void;
 }) {
   const [howto, setHowto] = useState(false);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
@@ -77,6 +79,9 @@ export function TitleScreen({
             </ActionButton>
             <ActionButton variant="secondary" onClick={() => setHowto(true)}>
               遊び方
+            </ActionButton>
+            <ActionButton variant="secondary" onClick={onRanking}>
+              ランキング
             </ActionButton>
             <ActionButton variant="secondary" onClick={() => onDemo(difficulty)}>
               DEMO（90秒）

@@ -6,11 +6,11 @@ import { generateMap } from "@/lib/mapgen";
 import { computeScore } from "@/lib/score";
 import { buildMockMission, mockComment } from "@/lib/mock";
 import { makeSeedString } from "@/lib/rng";
-import { saveResult } from "@/lib/store";
 import { diffConfig } from "@/lib/difficulty";
 import type { Difficulty, GameMap, Mission, Mode, RunResult, Screen } from "@/lib/types";
 import { IntroScreen } from "./IntroScreen";
 import { TitleScreen } from "./TitleScreen";
+import { RankingScreen } from "./RankingScreen";
 import { MissionScreen } from "./MissionScreen";
 import { MicCalibration } from "./MicCalibration";
 import { PlayScreen } from "./PlayScreen";
@@ -123,7 +123,6 @@ export default function Game() {
         createdAt: Date.now(),
       };
       setResult(run);
-      saveResult(run).catch(() => {});
       setScreen("result");
     },
     [demo, mode, seed, difficulty]
@@ -143,7 +142,15 @@ export default function Game() {
       case "intro":
         return <IntroScreen onDone={() => setScreen("title")} />;
       case "title":
-        return <TitleScreen onStart={startRun} onDemo={startDemo} />;
+        return (
+          <TitleScreen
+            onStart={startRun}
+            onDemo={startDemo}
+            onRanking={() => setScreen("ranking")}
+          />
+        );
+      case "ranking":
+        return <RankingScreen onBack={toTitle} />;
       case "mission":
         return (
           <MissionScreen

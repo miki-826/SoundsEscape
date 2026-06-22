@@ -64,6 +64,7 @@ export interface RunResult {
 export type Screen =
   | "intro"
   | "title"
+  | "ranking"
   | "mission"
   | "calibration"
   | "play"
