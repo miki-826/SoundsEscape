@@ -194,7 +194,7 @@ export function PlayScreen({
       {/* 下部コントロール */}
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3">
         <div className="hidden font-mono text-[10px] leading-relaxed tracking-wide text-muted sm:block">
-          <div>移動: WASD / 矢印{!manual && " ・ 声で前進"}</div>
+          <div>移動: WASD / 矢印{!manual && "（無音=速い / 発声=遅い）"}</div>
           <div>Ping: Space{manual ? "" : " / 声"} ・ 回収: E ・ Esc: 一時停止</div>
           <div className="text-accent/80">
             MIC: {manual ? "手動モード" : hud?.micActive ? "稼働中（音量のみ）" : "—"}

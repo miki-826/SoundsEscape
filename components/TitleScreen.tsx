@@ -101,7 +101,7 @@ export function TitleScreen({
                   <b className="text-accent">WASD / 矢印</b> で移動。声を出していない間も動ける。
                 </li>
                 <li>
-                  <b className="text-accent">声 / Space</b> で音波(Ping)を出すと、当たった壁・棚・床・忘れ物が一時的に光る。声が大きいほど遠くまで見え・速く動けるが、幽霊に気づかれやすい。
+                  <b className="text-accent">声 / Space</b> で音波(Ping)を出すと、当たった壁・棚・床・忘れ物が一時的に光る。声が大きいほど遠くまで見えるが、<b>その間は移動が遅くなり</b>幽霊にも気づかれやすい。無音のときが一番速い。
                 </li>
                 <li>
                   <b className="text-item">忘れ物</b>（黄色の二重反響）に近づき <b>E</b> で回収。

@@ -364,9 +364,10 @@ export class Engine {
     // 移動は声の有無に関わらず常に可能。声は速度ボーナスと音波(Ping=視界)に作用する。
     this.moveEnergy = moving ? 0.5 : 0;
 
+    // 無音ほど速く、声を出すほど遅くなる（暗闇を“見る”ために減速する葛藤）
     let speedFactor = this.manual
-      ? 0.82
-      : 0.72 + Math.min(1, this.smoothVoice) * 0.7; // 無音=0.72 / 大声=最大1.42
+      ? 1.0
+      : 1.2 - Math.min(1, this.smoothVoice) * 0.6; // 無音=1.2 / 大声=最小0.6
     if (this.carrying) speedFactor *= 0.82; // 運搬で減速
     const onHazard =
       this.tileAt(this.robot.x, this.robot.y) === "hazard";
@@ -481,16 +482,16 @@ export class Engine {
 
     let speed = 0;
     if (g.state === "patrol") {
-      speed = 46;
+      speed = 38;
       if (Math.hypot(g.target.x - g.x, g.target.y - g.y) < 18)
         g.target = this.randomWalkable();
     } else if (g.state === "investigate") {
-      speed = 86;
+      speed = 60;
     } else if (g.state === "chase") {
-      speed = (130 + g.level * 12) * (this.demo ? 0.8 : 1) * this.diff.ghostSpeedMul;
+      speed = (92 + g.level * 8) * (this.demo ? 0.8 : 1) * this.diff.ghostSpeedMul;
       g.visibleUntil = Math.max(g.visibleUntil, now + 120);
     } else if (g.state === "attack") {
-      speed = 60;
+      speed = 44;
       g.visibleUntil = Math.max(g.visibleUntil, now + 200);
       this.attackTimer -= dt;
       if (this.attackTimer <= 0) {
