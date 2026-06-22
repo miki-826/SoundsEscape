@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Engine, EngineInput, HudState } from "@/lib/engine";
 import type { AudioEngine } from "@/lib/audio";
-import type { GameMap, Mode } from "@/lib/types";
+import type { Difficulty, GameMap, Mode } from "@/lib/types";
 import { GaugeBar, ActionButton } from "./ui";
 
 const GHOST_LABEL: Record<string, string> = {
@@ -17,6 +17,7 @@ export function PlayScreen({
   audio,
   mode,
   demo,
+  difficulty,
   sensitivity,
   onEnd,
   onAbort,
@@ -25,6 +26,7 @@ export function PlayScreen({
   audio: AudioEngine;
   mode: Mode;
   demo: boolean;
+  difficulty: Difficulty;
   sensitivity: number;
   onEnd: (e: Engine) => void;
   onAbort: () => void;
@@ -43,7 +45,7 @@ export function PlayScreen({
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    const engine = new Engine(map, audio, manual, demo);
+    const engine = new Engine(map, audio, manual, demo, difficulty);
     (window as unknown as { __engine: Engine }).__engine = engine;
 
     const resize = () => {

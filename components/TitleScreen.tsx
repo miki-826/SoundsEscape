@@ -1,16 +1,20 @@
 "use client";
 import { useState } from "react";
 import { ScreenShell, ActionButton, Emblem, Panel } from "./ui";
-import type { Mode } from "@/lib/types";
+import { DIFFICULTIES } from "@/lib/difficulty";
+import type { Difficulty, Mode } from "@/lib/types";
+
+const DIFF_ORDER: Difficulty[] = ["easy", "normal", "hard"];
 
 export function TitleScreen({
   onStart,
   onDemo,
 }: {
-  onStart: (mode: Mode) => void;
-  onDemo: () => void;
+  onStart: (mode: Mode, difficulty: Difficulty) => void;
+  onDemo: (difficulty: Difficulty) => void;
 }) {
   const [howto, setHowto] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   return (
     <ScreenShell bg="/images/ui/title-bg.png" className="items-center justify-center text-center">
       <div className="flex flex-1 flex-col items-center justify-center gap-7">
@@ -29,18 +33,52 @@ export function TitleScreen({
           暗闇のホームセンターで、音波だけを頼りに忘れ物を持ち帰れ。
         </p>
 
+        {/* 難易度セレクター */}
+        <div className="w-full max-w-md">
+          <div className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.35em] text-muted">
+            難易度
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {DIFF_ORDER.map((d) => {
+              const cfg = DIFFICULTIES[d];
+              const active = difficulty === d;
+              return (
+                <button
+                  key={d}
+                  onClick={() => setDifficulty(d)}
+                  aria-pressed={active}
+                  className={`rounded-md border px-3 py-2 font-title text-sm font-bold tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    active
+                      ? "border-accent bg-accent/15 text-accent text-glow"
+                      : "border-line bg-panel/70 text-muted hover:border-accent/50 hover:text-text"
+                  }`}
+                >
+                  {cfg.label}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-2 text-center font-mono text-[10px] leading-relaxed text-muted">
+            {DIFFICULTIES[difficulty].desc} ・ 制限 {DIFFICULTIES[difficulty].timeSec}s
+          </p>
+        </div>
+
         <div className="flex flex-col items-center gap-3">
-          <ActionButton variant="primary" onClick={() => onStart("voice")} className="min-w-64 text-base">
+          <ActionButton
+            variant="primary"
+            onClick={() => onStart("voice", difficulty)}
+            className="min-w-64 text-base"
+          >
             回収を開始する
           </ActionButton>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <ActionButton variant="secondary" onClick={() => onStart("manual")}>
+            <ActionButton variant="secondary" onClick={() => onStart("manual", difficulty)}>
               手動モードで遊ぶ
             </ActionButton>
             <ActionButton variant="secondary" onClick={() => setHowto(true)}>
               遊び方
             </ActionButton>
-            <ActionButton variant="secondary" onClick={onDemo}>
+            <ActionButton variant="secondary" onClick={() => onDemo(difficulty)}>
               DEMO（90秒）
             </ActionButton>
           </div>
@@ -60,10 +98,10 @@ export function TitleScreen({
             <Panel title="遊び方 / OPERATION MANUAL">
               <ul className="space-y-2 text-sm text-text/90">
                 <li>
-                  <b className="text-accent">声 / Space</b> で音波(Ping)を出す。波が当たった壁・棚・床が一時的に光る。
+                  <b className="text-accent">WASD / 矢印</b> で移動。声を出していない間も動ける。
                 </li>
                 <li>
-                  <b className="text-accent">WASD / 矢印</b> で移動。声モードでは声を出している間だけ動ける。
+                  <b className="text-accent">声 / Space</b> で音波(Ping)を出すと、当たった壁・棚・床・忘れ物が一時的に光る。声が大きいほど遠くまで見え・速く動けるが、幽霊に気づかれやすい。
                 </li>
                 <li>
                   <b className="text-item">忘れ物</b>（黄色の二重反響）に近づき <b>E</b> で回収。

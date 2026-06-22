@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { ScreenShell, ActionButton, Panel, Stat } from "./ui";
 import { buildMockMission } from "@/lib/mock";
-import type { Mission, Mode } from "@/lib/types";
+import { diffConfig } from "@/lib/difficulty";
+import type { Difficulty, Mission, Mode } from "@/lib/types";
 
 const DANGER_LABEL = ["", "低", "中", "高"];
 
@@ -10,15 +11,18 @@ export function MissionScreen({
   seed,
   mode,
   demo,
+  difficulty,
   onProceed,
   onBack,
 }: {
   seed: string;
   mode: Mode;
   demo: boolean;
+  difficulty: Difficulty;
   onProceed: (m: Mission) => void;
   onBack: () => void;
 }) {
+  const timeSec = demo ? 90 : diffConfig(difficulty).timeSec;
   const [mission, setMission] = useState<Mission>(() => buildMockMission(seed));
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +79,7 @@ export function MissionScreen({
                 <Stat label="回収対象" value={<span className="text-item text-glow-item">{mission.itemName}</span>} accent="item" />
                 <Stat label="危険度" value={DANGER_LABEL[mission.difficulty] ?? "中"} accent="danger" />
                 <Stat label="報酬" value={mission.reward} />
-                <Stat label="制限時間" value={`${demo ? 90 : 180}s`} />
+                <Stat label="制限時間" value={`${timeSec}s`} />
               </div>
               <div className="mt-4 border-t border-line/70 pt-3">
                 <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted">
@@ -103,7 +107,7 @@ export function MissionScreen({
           </ActionButton>
         </div>
         <p className="mt-3 text-center font-mono text-[10px] tracking-widest text-muted">
-          SEED: {seed} ・ MODE: {mode === "voice" ? "VOICE" : "MANUAL"}
+          SEED: {seed} ・ MODE: {mode === "voice" ? "VOICE" : "MANUAL"} ・ 難易度: {diffConfig(difficulty).label}
         </p>
       </div>
     </ScreenShell>

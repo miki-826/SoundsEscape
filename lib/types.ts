@@ -40,6 +40,8 @@ export interface Mission {
 
 export type Mode = "voice" | "manual";
 
+export type Difficulty = "easy" | "normal" | "hard";
+
 export interface RunResult {
   success: boolean;
   score: number;

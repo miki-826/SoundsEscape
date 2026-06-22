@@ -1,6 +1,7 @@
-import { GameMap } from "./types";
+import { Difficulty, GameMap } from "./types";
 import { isBlocking } from "./mapgen";
 import { AudioEngine } from "./audio";
+import { diffConfig, DiffConfig } from "./difficulty";
 
 export interface EngineInput {
   up: boolean;
@@ -78,6 +79,7 @@ export class Engine {
   audio: AudioEngine;
   demo: boolean;
   manual: boolean;
+  diff: DiffConfig;
 
   robot: { x: number; y: number; hp: number; battery: number; speed: number };
   carrying = false;
@@ -116,11 +118,18 @@ export class Engine {
   message = "";
   private messageUntil = 0;
 
-  constructor(map: GameMap, audio: AudioEngine, manual: boolean, demo: boolean) {
+  constructor(
+    map: GameMap,
+    audio: AudioEngine,
+    manual: boolean,
+    demo: boolean,
+    difficulty: Difficulty = "normal"
+  ) {
     this.map = map;
     this.audio = audio;
     this.manual = manual;
     this.demo = demo;
+    this.diff = diffConfig(difficulty);
     this.robot = {
       x: map.start.x,
       y: map.start.y,
@@ -137,12 +146,12 @@ export class Engine {
       level: 0,
       visibleUntil: 0,
     };
-    this.timeLeft = demo ? 90 : 180;
+    this.timeLeft = demo ? 90 : this.diff.timeSec;
     const n = map.cols * map.rows;
     this.revealUntil = new Float64Array(n);
     this.revealLevel = new Float32Array(n);
     this.revealKind = new Uint8Array(n);
-    this.flash("回収を開始する。声で音波を出せ。", 3000);
+    this.flash("WASDで移動。声 / Space で音波を出して暗闇を読め。", 3200);
   }
 
   private idx(c: number, r: number) {
@@ -205,7 +214,10 @@ export class Engine {
         this.ghost.y
       );
       const recv = energy * (1 - gd / hearRange) * (occluded ? 0.35 : 1);
-      this.ghost.awareness = Math.min(1, this.ghost.awareness + recv * 0.9);
+      this.ghost.awareness = Math.min(
+        1,
+        this.ghost.awareness + recv * 0.9 * this.diff.awarenessMul
+      );
       this.ghost.target = { x: this.robot.x, y: this.robot.y };
     }
   }
@@ -349,17 +361,12 @@ export class Engine {
     if (input.right) dirx += 1;
     const moving = dirx !== 0 || diry !== 0;
 
-    // 発声必須ルール（音動力）
-    if (this.manual) {
-      this.moveEnergy = moving ? 0.5 : 0;
-    } else {
-      if (input.voice > 0.06) this.moveEnergy = 0.5;
-      else this.moveEnergy = Math.max(0, this.moveEnergy - dt);
-    }
+    // 移動は声の有無に関わらず常に可能。声は速度ボーナスと音波(Ping=視界)に作用する。
+    this.moveEnergy = moving ? 0.5 : 0;
 
     let speedFactor = this.manual
-      ? 0.78
-      : 0.45 + Math.min(1, this.smoothVoice) * 1.05;
+      ? 0.82
+      : 0.72 + Math.min(1, this.smoothVoice) * 0.7; // 無音=0.72 / 大声=最大1.42
     if (this.carrying) speedFactor *= 0.82; // 運搬で減速
     const onHazard =
       this.tileAt(this.robot.x, this.robot.y) === "hazard";
@@ -480,7 +487,7 @@ export class Engine {
     } else if (g.state === "investigate") {
       speed = 86;
     } else if (g.state === "chase") {
-      speed = (130 + g.level * 12) * (this.demo ? 0.8 : 1);
+      speed = (130 + g.level * 12) * (this.demo ? 0.8 : 1) * this.diff.ghostSpeedMul;
       g.visibleUntil = Math.max(g.visibleUntil, now + 120);
     } else if (g.state === "attack") {
       speed = 60;
@@ -488,7 +495,10 @@ export class Engine {
       this.attackTimer -= dt;
       if (this.attackTimer <= 0) {
         this.attackTimer = 0.5;
-        this.robot.hp = Math.max(0, this.robot.hp - (this.demo ? 12 : 16));
+        this.robot.hp = Math.max(
+          0,
+          this.robot.hp - (this.demo ? 12 : 16) * this.diff.damageMul
+        );
         this.hits++;
         this.hitFlash = now;
         this.audio.sfx("hit");

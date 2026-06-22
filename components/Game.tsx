@@ -7,7 +7,8 @@ import { computeScore } from "@/lib/score";
 import { buildMockMission, mockComment } from "@/lib/mock";
 import { makeSeedString } from "@/lib/rng";
 import { saveResult } from "@/lib/store";
-import type { GameMap, Mission, Mode, RunResult, Screen } from "@/lib/types";
+import { diffConfig } from "@/lib/difficulty";
+import type { Difficulty, GameMap, Mission, Mode, RunResult, Screen } from "@/lib/types";
 import { TitleScreen } from "./TitleScreen";
 import { MissionScreen } from "./MissionScreen";
 import { MicCalibration } from "./MicCalibration";
@@ -21,6 +22,7 @@ export default function Game() {
 
   const [screen, setScreen] = useState<Screen>("title");
   const [mode, setMode] = useState<Mode>("voice");
+  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [demo, setDemo] = useState(false);
   const [seed, setSeed] = useState("");
   const [, setMission] = useState<Mission | null>(null);
@@ -39,14 +41,16 @@ export default function Game() {
     }
   }, []);
 
-  const startRun = useCallback((m: Mode) => {
+  const startRun = useCallback((m: Mode, d: Difficulty) => {
     setMode(m);
+    setDifficulty(d);
     setDemo(false);
     setSeed(makeSeedString());
     setScreen("mission");
   }, []);
 
-  const startDemo = useCallback(() => {
+  const startDemo = useCallback((d: Difficulty) => {
+    setDifficulty(d);
     setDemo(true);
     setMode("manual");
     setSeed(makeSeedString());
@@ -73,7 +77,7 @@ export default function Game() {
 
   const onEnd = useCallback(
     async (engine: Engine) => {
-      const timeLimit = demo ? 90 : 180;
+      const timeLimit = demo ? 90 : diffConfig(difficulty).timeSec;
       const success = engine.result?.success ?? false;
       const clearTimeSec = Math.max(0, timeLimit - engine.timeLeft);
       const { score, rank, badge } = computeScore({
@@ -121,7 +125,7 @@ export default function Game() {
       saveResult(run).catch(() => {});
       setScreen("result");
     },
-    [demo, mode, seed]
+    [demo, mode, seed, difficulty]
   );
 
   const onRetry = useCallback(() => {
@@ -143,6 +147,7 @@ export default function Game() {
             seed={seed}
             mode={mode}
             demo={demo}
+            difficulty={difficulty}
             onProceed={onProceedMission}
             onBack={toTitle}
           />
@@ -166,6 +171,7 @@ export default function Game() {
             audio={audio}
             mode={mode}
             demo={demo}
+            difficulty={difficulty}
             sensitivity={sensitivity}
             onEnd={onEnd}
             onAbort={toTitle}
@@ -182,6 +188,7 @@ export default function Game() {
     seed,
     mode,
     demo,
+    difficulty,
     map,
     sensitivity,
     result,
